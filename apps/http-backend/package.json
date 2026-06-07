@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@prisma/client": "^7.8.0",
-    "@repo/typescript-config": "workspace:*",
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
     "cookie": "^1.1.1",
@@ -21,6 +20,11 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@repo/db":"workspace:*",
+    "@repo/backend-common": "workspace:*",
+    "@repo/common": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "dotenv": "^17.4.2",

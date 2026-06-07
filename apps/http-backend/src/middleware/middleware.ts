@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken'
 import { CustomUserPayload } from "../types/express"
+import {JWT_SECRET }from '@repo/backend-common/config'
 
 export function authMiddleware(req:Request, res:Response, next:NextFunction){
     try {
@@ -11,7 +12,7 @@ export function authMiddleware(req:Request, res:Response, next:NextFunction){
                 message:"user in not authorized"
             })
         }
-        const userVerification = jwt.verify(token!,process.env.JWT_SECRET!) as CustomUserPayload
+        const userVerification = jwt.verify(token!,JWT_SECRET!) as CustomUserPayload
 
         if(!userVerification){
             return res.status(401).json({

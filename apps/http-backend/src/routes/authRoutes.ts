@@ -1,7 +1,7 @@
 import express from 'express'
 import { signin,signup,logout } from '../controllers/authController'
 
-const router = express.Router()
+const router:express.Router = express.Router()
 
 router.post('/signin',signin)
 
