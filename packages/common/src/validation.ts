@@ -6,14 +6,16 @@ export const signinSchema = z.object({
 
 })
 
-
-
 export const signUpSchema  = signinSchema.extend({
     name:z.string().min(4),
     confirmPassword:z.string()
 }).refine((data)=>data.password===data.confirmPassword,{
     message:"password don't match",
     path:["confirmPassword"]
+})
+
+export const createRoomSchema = z.object({
+    slug:z.string().min(3).max(9)
 })
 
 

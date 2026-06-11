@@ -1,6 +1,6 @@
 import { HTTP_BACKEND } from "@/config"
 import axios from "axios"
-import { clear } from "console"
+
 
 
 type Shape = {
@@ -27,7 +27,7 @@ function getMousePos(e:MouseEvent, canvas:HTMLCanvasElement){
 }
 
 
-export async function initDraw(canvas:HTMLCanvasElement, roomId:string, socket:WebSocket){
+export async function initDraw(canvas:HTMLCanvasElement, roomId:Number, socket:WebSocket){
             const ctx = canvas.getContext("2d")
 
             let existingShpaes:Shape[] = await getExistingShapes(roomId)
@@ -80,10 +80,8 @@ export async function initDraw(canvas:HTMLCanvasElement, roomId:string, socket:W
 
                 socket.send(JSON.stringify({
                     type:"chat",
-                    message:JSON.stringify({
-                        shape
-                    })
-
+                    roomId:Number(roomId),
+                    message:JSON.stringify(shape)
                 }))
                
 
@@ -130,13 +128,13 @@ function clearCanvas(existingShpaes:Shape[] , canvas:HTMLCanvasElement, ctx:Canv
      
 }
 
-async function getExistingShapes(roomId:string){
+async function getExistingShapes(roomId:Number){
     const res = await axios.get(`${HTTP_BACKEND}/chats/${roomId}`)
     const messages = res.data.messages
 
-    const shapes = messages.forEach((x:{message:string})=>{
+    const shapes = messages.map((x:{message:string})=>{
         const messageData = JSON.parse(x.message)
-        return messageData
+        return messageData.shape ?? messageData
     })
 
     return shapes

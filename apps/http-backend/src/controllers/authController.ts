@@ -3,6 +3,8 @@ import { signinSchema,signUpSchema } from "@repo/common/validation"
 import { prisma } from "@repo/db/prisma"
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import { JWT_SECRET } from "@repo/backend-common/config"
+
 
 
 
@@ -11,10 +13,11 @@ import bcrypt from 'bcrypt'
 export const signup = async (req:Request,res:Response,next:NextFunction)=>{
     try {
         const response = signUpSchema.safeParse(req.body)
+        
         if(!response.success){
             return res.status(400).json({
                 status:false,
-                message:"SignUp failed"
+                message:response.error?.issues[0]?.message
             })
 
         }
@@ -79,6 +82,12 @@ export const signin = async (req:Request,res:Response,next:NextFunction)=>{
         }
 
     })
+    if(!foundUser){
+        return res.status(400).json({
+            message:"User not found",
+            status:false
+        })
+    }
     const hashedPassword = foundUser.password
 
     const verifyPassword = await bcrypt.compare(password,hashedPassword)
@@ -89,8 +98,8 @@ export const signin = async (req:Request,res:Response,next:NextFunction)=>{
             message:"Password Incorrect"
         })
     }
-
-    const token = jwt.sign({id:foundUser.id,email:foundUser.email} , process.env.JWT_SECRET!,{expiresIn:"1h"})
+   
+    const token = jwt.sign({id:foundUser.id,email:foundUser.email} , JWT_SECRET!,{expiresIn:"1h"})
     res.cookie("token",token,{
         path:'/',
         httpOnly:true,
@@ -103,6 +112,7 @@ export const signin = async (req:Request,res:Response,next:NextFunction)=>{
     })
     
   } catch (error) {
+    console.log(error)
     return res.status(500).json({
         status:false,
         message:"Unable to sign in"

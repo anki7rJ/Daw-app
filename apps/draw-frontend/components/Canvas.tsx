@@ -8,7 +8,7 @@ export default function Canvas({
     socket
 }:{
     socket:WebSocket
-    roomId:string
+    roomId:Number
 
 },){
 

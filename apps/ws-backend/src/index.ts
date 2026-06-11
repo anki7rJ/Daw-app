@@ -1,30 +1,85 @@
-import { WebSocketServer }  from 'ws'
+import { WebSocketServer,WebSocket }  from 'ws'
 import  jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '@repo/backend-common/config'
+import {parse} from "cookie"
+import { prisma } from "@repo/db/prisma";
+import { CustomUserPayload } from '../types/express';
+
 
 const wss = new WebSocketServer({ port:8080})
 
+interface User{
+    ws:WebSocket,
+    userId:string,
+    rooms:number[]
+}
+
+const users:User[] = []
+
 wss.on('connection',(ws,request)=>{
-    const url = request.url // ws://roulltte-api?token=123233
-    if(!url){
-        return 
+    try {
+        const cookies = parse(request.headers.cookie || "")
+        const token = cookies.token
+        
+
+    if(!token){
+        ws.close()
+        return
     }
-    const queryParams = new URLSearchParams(url.split('?')[1])
-    const token = queryParams.get('token') || ""
+
     const decoded = jwt.verify(token,JWT_SECRET) 
 
-    if(typeof decoded =="string"){
+    if(typeof decoded === "string"){
         ws.close()
         return
     }
 
-    if(!decoded || !decoded.user?.id){
-        ws.close()
-        return
-    }
- 
-    ws.on('message',(data)=>{
-        ws.send('pong')
-       
+    const user = decoded as CustomUserPayload
+    const userId= user.id
+
+    users.push({
+        userId,
+        rooms:[],
+        ws
     })
+
+    ws.on('message',async(data)=>{
+        const parsedData = JSON.parse(data.toString())
+        if(parsedData.type === "join_room"){
+            const user = users.find(x=>x.ws===ws)
+            user?.rooms.push(Number(parsedData.roomId))
+        }
+
+        if(parsedData.type==="chat"){
+            const roomId= Number(parsedData.roomId)
+            const message = parsedData.message
+        
+            await prisma.chat.create({
+                data:{
+                    roomId,
+                    message,
+                    userId
+                }
+            })
+            
+
+            users.forEach(user=>{
+                if(user.rooms.includes(roomId)){
+                    user.ws.send(JSON.stringify({
+                        type:"chat",
+                        message:message,
+                        roomId
+                    }))
+                }
+            })
+        }
+    })
+        
+    } catch (error) {
+        ws.close()
+        console.log("error:",error)
+        
+    }
+
+    
 })
