@@ -1,9 +1,11 @@
 "use client"
 
 import { HTTP_BACKEND } from "@/config"
-import axios from "axios"
+import api from "@/lib/api"
+
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+
 
 export default function RoomPage() {
   const router = useRouter()
@@ -23,7 +25,7 @@ export default function RoomPage() {
 
     try {
       setLoading(true)
-      const response = await axios.post( `${HTTP_BACKEND}/room`,{ slug: trimmedSlug }, { withCredentials: true })
+      const response = await api.post( `${HTTP_BACKEND}/room`,{ slug: trimmedSlug })
 
       const roomId = response.data.roomId
       router.push(`/canvas/${trimmedSlug}`)
@@ -35,18 +37,38 @@ export default function RoomPage() {
   }
 
   async function joinRoom(e:React.FormEvent) {
-    try {
-      setLoading(true)
-      const response = await axios.get(`${HTTP_BACKEND}/room/${slug}`)
-      const trimmedSlug = slug.trim()
-      if (!trimmedSlug) {
+    e.preventDefault()
+    const trimmedSlug = slug.trim()
+    if (!trimmedSlug) {
         setError("Enter a room name")
         return
-      }
-      router.push(`/canvas/${trimmedSlug}`)
+    }
+
+    try {
+      setLoading(true)
+      setError("")
       
-    } catch (error) {
-      setError("Room does not exist")
+      
+      await api.get(`${HTTP_BACKEND}/room/${slug}`)
+      
+      
+       router.push(`/canvas/${trimmedSlug}`)
+      
+     
+      
+      
+    } catch (error:any) {
+      if(error.response?.status===401){
+        setError("Please sign in first")
+        router.push("/signin")
+        return
+      }
+
+      if(error.response?.status===404){
+        setError("Room does not exist")
+        return
+      }
+      setError("Something went wrong")
       
     }
     finally{
@@ -76,13 +98,16 @@ export default function RoomPage() {
             className="border border-zinc-700 rounded-xl px-4 py-2 disabled:opacity-60"
           >
             {loading ? "Creating..." : "Create room"}
+            
           </button>
           <button
             type="button"
             onClick={joinRoom}
           >
-            Join Room
+            {loading ? "Joining..." : "Join room"}
           </button>
+
+          
         </form>
       </section>
     </main>

@@ -4,7 +4,9 @@ import { HTTP_BACKEND, WS_URL } from "@/config"
 
 import { useEffect,  useState } from "react"
 import Canvas from "./Canvas"
-import axios from "axios"
+
+import api from "@/lib/api"
+
 
 
 
@@ -17,7 +19,7 @@ export default function RoomCanvas ({slug}:{slug:string}){
 
     useEffect(() => {
     async function loadRoom() {
-        const res = await axios.get(`${HTTP_BACKEND}/room/${slug}`)
+        const res = await api.get(`${HTTP_BACKEND}/room/${slug}`)
 
         setRoomId(res.data.roomId)
     }

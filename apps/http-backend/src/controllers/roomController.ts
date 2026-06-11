@@ -81,7 +81,7 @@ export const chats = async (req:Request,res:Response,next:NextFunction)=>{
 interface RoomParams{
     slug:string
 }
-export const getRoomBySlug = async (req:Request<RoomParams>,res:Response)=>{
+export const getRoomBySlug = async (req:Request<{slug:string}>,res:Response,next:NextFunction)=>{
     const {slug} = req.params
     const room = await prisma.room.findUnique({
         where:{

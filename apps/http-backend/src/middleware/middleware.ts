@@ -5,10 +5,12 @@ import {JWT_SECRET }from '@repo/backend-common/config'
 
 export function authMiddleware(req:Request, res:Response, next:NextFunction){
     try {
+        console.log("cookie header:", req.headers.cookie)
+        console.log("cookies object:", req.cookies)
         const token = req.cookies.token
         if(!token){
             return res.status(401).json({
-                status:"false",
+                status:false,
                 message:"user in not authorized"
             })
         }
@@ -16,12 +18,13 @@ export function authMiddleware(req:Request, res:Response, next:NextFunction){
 
         if(!userVerification){
             return res.status(401).json({
-                satatus:"false",
+                satatus:false,
                 message:"User is not verified"
 
             })
 
         }
+
         req.user = userVerification
         next()
 

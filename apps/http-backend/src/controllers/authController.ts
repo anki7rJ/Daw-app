@@ -93,7 +93,7 @@ export const signin = async (req:Request,res:Response,next:NextFunction)=>{
     const verifyPassword = await bcrypt.compare(password,hashedPassword)
 
     if(!verifyPassword){
-        res.status(400).json({
+        return res.status(400).json({
             status:false,
             message:"Password Incorrect"
         })
@@ -103,7 +103,9 @@ export const signin = async (req:Request,res:Response,next:NextFunction)=>{
     res.cookie("token",token,{
         path:'/',
         httpOnly:true,
-        maxAge:60*60*1000
+        maxAge:60*60*1000,
+        sameSite:"lax",
+        secure:false
     })
 
     res.status(200).json({

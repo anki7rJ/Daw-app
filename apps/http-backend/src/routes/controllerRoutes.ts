@@ -6,6 +6,6 @@ const controllerRouter:express.Router = express.Router();
 
 controllerRouter.post("/room", authMiddleware, room);
 controllerRouter.get("/chats/:roomId", chats);
-controllerRouter.get("/room/:slug",getRoomBySlug)
+controllerRouter.get("/room/:slug",authMiddleware,getRoomBySlug)
 
 export default controllerRouter;
