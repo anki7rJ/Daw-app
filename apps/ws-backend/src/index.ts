@@ -18,6 +18,7 @@ const users:User[] = []
 
 wss.on('connection',(ws,request)=>{
     try {
+        console.log("cookies:", request.headers.cookie)
         const cookies = parse(request.headers.cookie || "")
         const token = cookies.token
         
