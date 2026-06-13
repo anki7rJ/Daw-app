@@ -101,6 +101,7 @@ export const signin = async (req:Request,res:Response,next:NextFunction)=>{
    
     const token = jwt.sign({id:foundUser.id,email:foundUser.email} , JWT_SECRET!,{expiresIn:"1h"})
     const isProduction = process.env.NODE_ENV === "production"
+
     res.cookie("token",token,{
         path:'/',
         httpOnly:true,
@@ -108,6 +109,8 @@ export const signin = async (req:Request,res:Response,next:NextFunction)=>{
         sameSite: isProduction?"none":"lax",
         secure:isProduction
     })
+    console.log("NODE_ENV=",process.env.NODE_ENV)
+    console.log("isProduction=",isProduction)
 
     res.status(200).json({
         status:true,
