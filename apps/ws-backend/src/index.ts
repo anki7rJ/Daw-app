@@ -5,8 +5,8 @@ import {parse} from "cookie"
 import { prisma } from "@repo/db/prisma";
 import { CustomUserPayload } from '../types/express';
 
-
-const wss = new WebSocketServer({ port:8080})
+const port = Number(process.env.PORT) || 8080
+const wss = new WebSocketServer({ port})
 
 interface User{
     ws:WebSocket,
