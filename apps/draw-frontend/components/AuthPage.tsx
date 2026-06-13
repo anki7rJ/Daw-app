@@ -25,7 +25,7 @@ export function AuthPage({isSignin}:{isSignin:boolean}){
             const body = isSignin?{email,password}:{email,password,name,confirmPassword}
         
             const res = await api.post(endpoint,body)
-            if(res.data.toekn){
+            if(res.data.token){
                 localStorage.setItem("token",res.data.token)
             }
             router.push(isSignin ? "/room" : "/signin")
@@ -34,8 +34,7 @@ export function AuthPage({isSignin}:{isSignin:boolean}){
         } catch (error:any) {
 
             setError(error.response?.data?.message || "something went wrong")
-            
-        
+
             
         } finally {
             setLoading(false)

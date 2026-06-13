@@ -34,7 +34,7 @@ export default function RoomCanvas ({slug}:{slug:string}){
         
         
         const token = localStorage.getItem("token")
-        const ws = new WebSocket(`${WS_URL}?token${token}`);
+        const ws = new WebSocket(`${WS_URL}?token=${token}`);
 
 
         ws.onopen= ()=>{
