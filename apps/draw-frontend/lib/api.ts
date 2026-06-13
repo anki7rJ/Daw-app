@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api= axios.create({
-    baseURL:"http://localhost:3001",
+    baseURL:process.env.NEXT_PUBLIC_HTTP_BACKEND,
     withCredentials:true
 })
 

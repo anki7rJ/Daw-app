@@ -100,12 +100,13 @@ export const signin = async (req:Request,res:Response,next:NextFunction)=>{
     }
    
     const token = jwt.sign({id:foundUser.id,email:foundUser.email} , JWT_SECRET!,{expiresIn:"1h"})
+    const isProduction = process.env.NODE_ENV === "production"
     res.cookie("token",token,{
         path:'/',
         httpOnly:true,
         maxAge:60*60*1000,
-        sameSite:"lax",
-        secure:false
+        sameSite: isProduction?"none":"lax",
+        secure:isProduction
     })
 
     res.status(200).json({
