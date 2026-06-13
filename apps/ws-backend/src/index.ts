@@ -17,13 +17,15 @@ interface User{
 const users:User[] = []
 
 wss.on('connection',(ws,request)=>{
+    console.log("NEW CONNECTION")
     try {
         console.log("cookies:", request.headers.cookie)
         const cookies = parse(request.headers.cookie || "")
         const token = cookies.token
-        
+        console.log("TOKEN exists:" ,!!token)
 
     if(!token){
+        console.log("NO TOKEN, CLOSING")
         ws.close()
         return
     }
