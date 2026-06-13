@@ -17,15 +17,14 @@ interface User{
 const users:User[] = []
 
 wss.on('connection',(ws,request)=>{
-    console.log("NEW CONNECTION")
+    
     try {
-        console.log("cookies:", request.headers.cookie)
         
         const url = new URL(
             request.url ||"","http://localhost"
         )
         const token = url.searchParams.get("token")
-        console.log("TOKEN exists:" ,!!token)
+        
 
     if(!token){
         console.log("NO TOKEN, CLOSING")
@@ -50,9 +49,9 @@ wss.on('connection',(ws,request)=>{
     })
 
     ws.on('message',async(data)=>{
-        console.log("RAW MESSAGE:",data.toString())
+        
         const parsedData = JSON.parse(data.toString())
-        console.log("PARSED:",parsedData)
+        
         if(parsedData.type === "join_room"){
             const user = users.find(x=>x.ws===ws)
             user?.rooms.push(Number(parsedData.roomId))
@@ -85,7 +84,7 @@ wss.on('connection',(ws,request)=>{
         
     } catch (error) {
         ws.close()
-        console.log("MESSAGE ERROR:",error)
+        console.log("ERROR:",error)
         
     }
 

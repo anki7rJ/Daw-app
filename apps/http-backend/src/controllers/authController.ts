@@ -109,8 +109,7 @@ export const signin = async (req:Request,res:Response,next:NextFunction)=>{
         sameSite: isProduction?"none":"lax",
         secure:isProduction
     })
-    console.log("NODE_ENV=",process.env.NODE_ENV)
-    console.log("isProduction=",isProduction)
+    
 
     res.status(200).json({
         status:true,
