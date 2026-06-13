@@ -34,14 +34,24 @@ export default function RoomCanvas ({slug}:{slug:string}){
         const ws = new WebSocket(WS_URL)
 
         ws.onopen= ()=>{
+            console.log("ws open")
             setSocket(ws)
             ws.send(JSON.stringify({
                 type:"join_room",
                 roomId
             }))
         }
+        ws.onclose=(event)=>{
+            console.log("ws closed",event.code , event.reason)
+        }
+        ws.onerror=(event)=>{
+            console.log("ws error",event)
+        }
+        return ()=>{
+            console.log("cleanup closing socket")
+            ws.close()
 
-        return ()=>ws.close()
+        }
     },[roomId])
 
     if(roomId === null){
