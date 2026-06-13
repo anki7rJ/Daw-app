@@ -48,7 +48,7 @@ export default function RoomCanvas ({slug}:{slug:string}){
             console.log("ws error",event)
         }
         return ()=>{
-            console.log("cleanup closing socket")
+            console.log("ROOM CANVAS CLEANUP")
             ws.close()
 
         }

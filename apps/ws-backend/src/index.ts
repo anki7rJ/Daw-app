@@ -47,7 +47,9 @@ wss.on('connection',(ws,request)=>{
     })
 
     ws.on('message',async(data)=>{
+        console.log("RAW MESSAGE:",data.toString())
         const parsedData = JSON.parse(data.toString())
+        console.log("PARSED:",parsedData)
         if(parsedData.type === "join_room"){
             const user = users.find(x=>x.ws===ws)
             user?.rooms.push(Number(parsedData.roomId))
@@ -80,7 +82,7 @@ wss.on('connection',(ws,request)=>{
         
     } catch (error) {
         ws.close()
-        console.log("error:",error)
+        console.log("MESSAGE ERROR:",error)
         
     }
 

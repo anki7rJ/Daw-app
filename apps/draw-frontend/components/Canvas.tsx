@@ -37,7 +37,7 @@ export default function Canvas({
         }
         
 
-    },[canvasRef])
+    },[socket,roomId])
 
 
     return <div style={{
