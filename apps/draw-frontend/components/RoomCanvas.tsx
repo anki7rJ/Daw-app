@@ -31,7 +31,11 @@ export default function RoomCanvas ({slug}:{slug:string}){
          if(roomId === null){
             return
          }
-        const ws = new WebSocket(WS_URL)
+        
+        
+        const token = localStorage.getItem("token")
+        const ws = new WebSocket(`${WS_URL}?token${token}`);
+
 
         ws.onopen= ()=>{
             console.log("ws open")

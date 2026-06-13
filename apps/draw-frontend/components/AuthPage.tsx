@@ -23,7 +23,11 @@ export function AuthPage({isSignin}:{isSignin:boolean}){
         try {
             const endpoint = isSignin?`${HTTP_BACKEND}/auth/signin`:`${HTTP_BACKEND}/auth/signup`
             const body = isSignin?{email,password}:{email,password,name,confirmPassword}
-            await api.post(endpoint,body)
+        
+            const res = await api.post(endpoint,body)
+            if(res.data.toekn){
+                localStorage.setItem("token",res.data.token)
+            }
             router.push(isSignin ? "/room" : "/signin")
 
             

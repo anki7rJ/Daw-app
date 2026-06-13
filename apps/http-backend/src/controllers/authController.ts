@@ -114,6 +114,7 @@ export const signin = async (req:Request,res:Response,next:NextFunction)=>{
 
     res.status(200).json({
         status:true,
+        token,
         message:"User logged In"
     })
     

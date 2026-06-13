@@ -20,8 +20,11 @@ wss.on('connection',(ws,request)=>{
     console.log("NEW CONNECTION")
     try {
         console.log("cookies:", request.headers.cookie)
-        const cookies = parse(request.headers.cookie || "")
-        const token = cookies.token
+        
+        const url = new URL(
+            request.url ||"","http://localhost"
+        )
+        const token = url.searchParams.get("token")
         console.log("TOKEN exists:" ,!!token)
 
     if(!token){
