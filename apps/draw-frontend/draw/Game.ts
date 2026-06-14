@@ -16,10 +16,10 @@ type Shape = {
 
 }|{
     type:"pencil"
-    startX:number
-    startY:number
-    endX:number
-    endY:number
+    points:{
+        x:number
+        y:number
+    }[]
 
 }
 
@@ -29,16 +29,17 @@ export class Game{
     private canvas:HTMLCanvasElement
     private ctx:CanvasRenderingContext2D
     private existingShapes:Shape[]
-    private roomId:Number
+    private roomId:number
     private socket:WebSocket
     private clicked:boolean
     private startX :number=0
     private startY:number=0
     private selectedTool:Tool ="circle"
+    private currentPoints:{x:number,y:number}[]=[]
 
 
 
-    constructor(canvas:HTMLCanvasElement,roomId:Number,socket:WebSocket){
+    constructor(canvas:HTMLCanvasElement,roomId:number,socket:WebSocket){
         this.canvas=canvas
         this.ctx = canvas.getContext("2d")! 
         this.existingShapes=[]
@@ -87,6 +88,7 @@ export class Game{
 
         this.existingShapes.forEach((shape)=>{
 
+
             if(shape.type =="rect"){
                 this.ctx.strokeStyle="white"
                 this.ctx.strokeRect(
@@ -95,14 +97,19 @@ export class Game{
                     shape.width,
                     shape.height
                 )
-
             }else if(shape.type ==="circle"){
-
                 this.ctx.beginPath()
                 this.ctx.arc(shape.centerX,shape.centerY,Math.abs(shape.radius),0,Math.PI*2)
                 this.ctx.stroke()
                 this.ctx.closePath()
-
+            }else if(shape.type ==="pencil"){
+                if(shape.points.length<2) return
+                this.ctx.beginPath()
+                this.ctx.moveTo(shape.points[0].x, shape.points[0].y)
+                for(let i=1;i<shape.points.length;i++){
+                    this.ctx.lineTo(shape.points[i].x, shape.points[i].y)
+                }
+                this.ctx.stroke()
             }
         })
     }
@@ -112,65 +119,98 @@ export class Game{
         this.clicked = true
         this.startX = x
         this.startY = y
+        if(this.selectedTool==="pencil"){
+            this.currentPoints=[{x,y}]
+        }
 
     }
     mouseUpHandler=(e:any)=>{
+    
+
         this.clicked = false
-                const {x,y} = this.getMousePos(e)
-
-                const width = x-this.startX
-                const height = y- this.startY
-                //@ts-ignore
-                const selectedTool = this.selectedTool
-                let shape :Shape |null = null
-                if(selectedTool==="rect"){
-                    shape = {
-                    //@ts-ignore
-                    type:"rect",
-                    x:this.startX,
-                    y:this.startY,
-                    height,
-                    width
-                }
-
-                }else if(selectedTool==="circle"){
-                    const radius = Math.max(width,height)/2
-                    shape = {
-                    //@ts-ignore
-                    type:"circle",
-                    radius:radius,
-                    centerX:this.startX+radius,
-                    centerY:this.startY+radius,
-                
-                }
- 
-                }
-                if(!shape){
-                    return
-                }
-                this.existingShapes.push(shape)
-                
-                
-
-                this.socket.send(JSON.stringify({
-                    type:"chat",
-                    roomId:Number(this.roomId),
-                    message:JSON.stringify(shape)
-                }))
+        const {x,y} = this.getMousePos(e)
+    
+        
+        const width = x-this.startX
+        const height = y- this.startY
+        
+        const selectedTool = this.selectedTool
+        let shape :Shape |null = null
+        if(selectedTool==="rect"){
+            shape = {
+            
+            type:"rect",
+            x:this.startX,
+            y:this.startY,
+            height,
+            width
+        }
+        }else if(selectedTool==="circle"){
+            const radius = Math.max(width,height)/2
+            shape = {
+            
+            type:"circle",
+            radius:radius,
+            centerX:this.startX+radius,
+            centerY:this.startY+radius,
+            }
+        
+        }
+        else if(selectedTool==="pencil"){
+            shape = {
+                type:"pencil",
+                points:[...this.currentPoints]
+            }
+            this.currentPoints=[]
+        
+        }
+    
+        if(!shape){
+            return
+        }
+        this.existingShapes.push(shape)
+        
+        
+        this.socket.send(JSON.stringify({
+            type:"chat",
+            roomId:Number(this.roomId),
+            message:JSON.stringify(shape)
+        }))
                
-
-
-
     }
     mouseMoveHandler=(e:any)=>{
         if(this.clicked){
-
             const {x,y} = this.getMousePos(e)
+
+            if(this.selectedTool === "pencil"){
+            this.currentPoints.push({x,y})
+
+            this.clearCanvas()
+
+            this.ctx.beginPath()
+
+            for(let i=1;i<this.currentPoints.length;i++){
+                this.ctx.moveTo(
+                    this.currentPoints[i-1].x,
+                    this.currentPoints[i-1].y
+                )
+
+                this.ctx.lineTo(
+                    this.currentPoints[i].x,
+                    this.currentPoints[i].y
+                )
+            }
+
+            this.ctx.stroke()
+            return
+        }
+
+            
             const width = x- this.startX
             const height = y-this.startY
             this.clearCanvas()
             this.ctx.strokeStyle= "white"
-            //@ts-ignore
+            
             const selectedTool = this.selectedTool
             
             
