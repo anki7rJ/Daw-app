@@ -13,7 +13,7 @@ export default function Canvas({
     socket
 }:{
     socket:WebSocket
-    roomId:Number
+    roomId:number
 
 },){
     const canvasRef = useRef<HTMLCanvasElement>(null)
