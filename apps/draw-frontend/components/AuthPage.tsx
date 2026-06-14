@@ -64,6 +64,21 @@ export function AuthPage({isSignin}:{isSignin:boolean}){
                     
                     </>
                 )}
+                
+                <label htmlFor="Email">Email:</label>
+                <input type="email"
+                className="border rounded-2xl p-2"
+                 placeholder="Enter Your Email"
+                 value={email}
+                 onChange={(e)=>setEmail(e.target.value)}
+                  />
+                  <label htmlFor="Password">Password:</label>
+                <input type="password"
+                 placeholder="Enter Your Password"
+                 className="border rounded-2xl p-2"
+                 value={password}
+                 onChange={(e)=>setPassword(e.target.value)}
+                  />
                 {
                     !isSignin && (
                         <>
@@ -82,20 +97,6 @@ export function AuthPage({isSignin}:{isSignin:boolean}){
                         </>
                     )
                 }
-                <label htmlFor="Email">Email:</label>
-                <input type="email"
-                className="border rounded-2xl p-2"
-                 placeholder="Enter Your Email"
-                 value={email}
-                 onChange={(e)=>setEmail(e.target.value)}
-                  />
-                  <label htmlFor="Password">Password:</label>
-                <input type="password"
-                 placeholder="Enter Your Password"
-                 className="border rounded-2xl p-2"
-                 value={password}
-                 onChange={(e)=>setPassword(e.target.value)}
-                  />
                 <button className=" border rounded-xl  px-4 py-2 text-base self-center hover:cursor-pointer" type="submit">{loading?"Loading...":isSignin?"Signin":"Signup"}</button>
                 {loading&&(
                     <p className="text-center text-sm">Authenticating...</p>

@@ -1,7 +1,7 @@
 import { WebSocketServer,WebSocket }  from 'ws'
 import  jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '@repo/backend-common/config'
-import {parse} from "cookie"
+
 import { prisma } from "@repo/db/prisma";
 import { CustomUserPayload } from '../types/express';
 
@@ -27,7 +27,7 @@ wss.on('connection',(ws,request)=>{
         
 
     if(!token){
-        console.log("NO TOKEN, CLOSING")
+        
         ws.close()
         return
     }
